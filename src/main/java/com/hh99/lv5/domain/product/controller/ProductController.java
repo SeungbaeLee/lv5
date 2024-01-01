@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.LimitExceededException;
 import java.util.List;
 
 @RestController
@@ -44,5 +45,13 @@ public class ProductController {
 
         PageDto pageDto = new PageDto<>(ProductResponseDto.fromEntityList(productList), productPage);
         return new ResponseEntity<>(pageDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/products/{productId}/buckets")
+    public ResponseEntity addToBucket(@PathVariable("productId") @Positive long productId,
+                                      @RequestParam long memberId,
+                                      long quantity) {
+        productService.addToBucket(productId, memberId,quantity);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

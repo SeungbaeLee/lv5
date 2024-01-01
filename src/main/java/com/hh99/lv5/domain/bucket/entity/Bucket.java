@@ -5,6 +5,7 @@ import com.hh99.lv5.domain.member.entity.Member;
 import com.hh99.lv5.global.auditing.Auditable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,4 +28,9 @@ public class Bucket extends Auditable {
     @OneToMany(mappedBy = "bucket")
     private List<BucketProduct> bucketProducts = new ArrayList<>();
 
+    @Builder
+    public Bucket(Long bucketId, Member member) {
+        this.bucketId = bucketId;
+        this.member = member;
+    }
 }
