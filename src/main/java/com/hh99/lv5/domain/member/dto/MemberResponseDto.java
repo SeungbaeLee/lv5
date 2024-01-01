@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class MemberResponseDto {
 
-    private Long memberId;
+    private long memberId;
     private String email;
     private String gender;
     private String phoneNumber;
