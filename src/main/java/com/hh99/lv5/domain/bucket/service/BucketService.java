@@ -58,8 +58,28 @@ public class BucketService {
                 .build();
     }
 
+    public BucketResponseDto updateQuantity(long memberId, long productId, long quantity) {
+        Member member = memberService.findMemberById(memberId);
+        Bucket bucket = getBucketByMember(member);
 
+        BucketProduct bucketProduct = findBucketProductByProductId(bucket, productId);
+        bucketProduct.updateCount(quantity);
 
+        List<BucketProduct> bucketProducts = bucket.getBucketProducts();
+        return BucketResponseDto.builder()
+                .bucketProducts(bucketProducts)
+                .totalPrice(calculateTotalPrice(bucketProducts))
+                .build();
+
+    }
+
+    public void deleteProductFromBucket(long memberId, long productId) {
+        Member member = memberService.findMemberById(memberId);
+        Bucket bucket = getBucketByMember(member);
+
+        BucketProduct bucketProduct = findBucketProductByProductId(bucket, productId);
+        bucketProductRepository.delete(bucketProduct);
+    }
 
     private Bucket getBucketByMember(Member member) {
         Bucket bucket = bucketRepository.findByMemberId(member.getMemberId())
@@ -83,5 +103,11 @@ public class BucketService {
         return bucketProducts.stream()
                 .mapToLong(bP -> bP.getProduct().getPrice() * bP.getCount())
                 .sum();
+    }
+
+    private BucketProduct findBucketProductByProductId(Bucket bucket, Long productId) {
+        // 장바구니에서 해당 상품을 찾아 반환합니다.
+        return bucketProductRepository.findBucketProductByBucketAndProductId(bucket, productId)
+                .orElse(null);
     }
 }

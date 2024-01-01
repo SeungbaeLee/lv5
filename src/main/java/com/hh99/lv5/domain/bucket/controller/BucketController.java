@@ -21,4 +21,18 @@ public class BucketController {
         return new ResponseEntity<>(bucketResponseDto, HttpStatus.OK);
     }
 
+    @PatchMapping("/{productId}")
+    public ResponseEntity updateQuantity(@PathVariable("memberId") @Positive long memberId,
+                                         @PathVariable("productId") @Positive long productId,
+                                         @RequestParam long quantity) {
+        BucketResponseDto bucketResponseDto = bucketService.updateQuantity(memberId, productId, quantity);
+        return new ResponseEntity<>(bucketResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity deleteProductFromBucket(@PathVariable("memberId") @Positive long memberId,
+                                                  @PathVariable("productId") @Positive long productId) {
+        bucketService.deleteProductFromBucket(memberId, productId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
