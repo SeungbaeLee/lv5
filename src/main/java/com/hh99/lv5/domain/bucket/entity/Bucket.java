@@ -1,11 +1,15 @@
 package com.hh99.lv5.domain.bucket.entity;
 
+import com.hh99.lv5.domain.bucketProduct.entity.BucketProduct;
 import com.hh99.lv5.domain.member.entity.Member;
 import com.hh99.lv5.global.auditing.Auditable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,5 +23,8 @@ public class Bucket extends Auditable {
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "bucket")
+    private List<BucketProduct> bucketProducts = new ArrayList<>();
 
 }
