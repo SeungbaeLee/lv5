@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface BucketProductRepository extends JpaRepository<BucketProduct, Long> {
-    @Query("SELECT bp FROM BucketProduct bp WHERE bp.bucket = :bucket AND bp.product.productId = :productId")
-    Optional<BucketProduct> findBucketProductByBucketAndProductId(@Param("bucket") Bucket bucket, @Param("productId") Long productId);
+    //    @Query(value = "SELECT * FROM likes WHERE member_id = :memberId AND lecture_id = :lectureId", nativeQuery = true)
+    @Query("SELECT bp FROM BucketProduct bp WHERE bp.bucket.bucketId = :bucketId AND bp.product.productId = :productId")
+    Optional<BucketProduct> findBucketProductByBucketAndProductId(@Param("bucketId") Long bucketId, @Param("productId") Long productId);
 }

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,15 +52,14 @@ public class ProductService {
         return productRepository.findAll(pageRequest);
     }
 
-    public void addToBucket(long productId, long memberId, long quantity) {
+    public void addToBucket(long productId, long quantity) {
         Product product = findProductById(productId);
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (product.getQuantity() < quantity) {
             throw new RuntimeException("상품의 수량을 초과했습니다. 수량을 조절해주세요.");
-            }
-        Member member = memberService.findMemberById(memberId);
-
-        bucketService.addProductToBucket(product, member, quantity);
         }
+        bucketService.addProductToBucket(product, member, quantity);
+    }
 
 
     //검증

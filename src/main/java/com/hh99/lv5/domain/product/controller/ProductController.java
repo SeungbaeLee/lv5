@@ -49,9 +49,10 @@ public class ProductController {
 
     @PostMapping("/{productId}/buckets")
     public ResponseEntity addToBucket(@PathVariable("productId") @Positive long productId,
-                                      @RequestParam long memberId,
+//                                      @RequestParam long memberId,
                                       @RequestParam long quantity) {
-        productService.addToBucket(productId, memberId,quantity);
+//        productService.addToBucket(productId, memberId,quantity);
+        productService.addToBucket(productId, quantity);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

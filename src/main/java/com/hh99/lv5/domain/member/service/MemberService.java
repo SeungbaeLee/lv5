@@ -5,6 +5,7 @@ import com.hh99.lv5.domain.member.dto.MemberResponseDto;
 import com.hh99.lv5.domain.member.entity.Member;
 import com.hh99.lv5.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +17,15 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberResponseDto createMember(MemberPostDto postDto) {
 
+        String encryptedPassword = passwordEncoder.encode(postDto.getPassword());
+
         Member member = Member.builder()
                 .email(postDto.getEmail())
-                .password(postDto.getPassword())//시큐리티 적용 후 해싱 에정
+                .password(encryptedPassword)
                 .gender(postDto.getGender())
                 .phoneNumber(postDto.getPhoneNumber())
                 .address(postDto.getAddress())

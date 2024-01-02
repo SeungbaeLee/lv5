@@ -62,7 +62,7 @@ public class BucketService {
         Member member = memberService.findMemberById(memberId);
         Bucket bucket = getBucketByMember(member);
 
-        BucketProduct bucketProduct = findBucketProductByProductId(bucket, productId);
+        BucketProduct bucketProduct = findBucketProductByProductId(bucket.getBucketId(), productId);
         bucketProduct.updateCount(quantity);
 
         List<BucketProduct> bucketProducts = bucket.getBucketProducts();
@@ -77,12 +77,12 @@ public class BucketService {
         Member member = memberService.findMemberById(memberId);
         Bucket bucket = getBucketByMember(member);
 
-        BucketProduct bucketProduct = findBucketProductByProductId(bucket, productId);
+        BucketProduct bucketProduct = findBucketProductByProductId(bucket.getBucketId(), productId);
         bucketProductRepository.delete(bucketProduct);
     }
 
     private Bucket getBucketByMember(Member member) {
-        Bucket bucket = bucketRepository.findByMemberId(member.getMemberId())
+        Bucket bucket = bucketRepository.findByMember_MemberId(member.getMemberId())
                 .orElseGet(()->{
                     Bucket newBucket = Bucket.builder()
                             .member(member)
@@ -105,9 +105,9 @@ public class BucketService {
                 .sum();
     }
 
-    private BucketProduct findBucketProductByProductId(Bucket bucket, Long productId) {
+    private BucketProduct findBucketProductByProductId(Long bucketId, Long productId) {
         // 장바구니에서 해당 상품을 찾아 반환합니다.
-        return bucketProductRepository.findBucketProductByBucketAndProductId(bucket, productId)
+        return bucketProductRepository.findBucketProductByBucketAndProductId(bucketId, productId)
                 .orElse(null);
     }
 }

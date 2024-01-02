@@ -1,5 +1,6 @@
 package com.hh99.lv5.domain.bucketProduct.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hh99.lv5.domain.bucket.entity.Bucket;
 import com.hh99.lv5.domain.product.entity.Product;
 import com.hh99.lv5.global.auditing.Auditable;
@@ -20,10 +21,12 @@ public class BucketProduct extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "bucket_id")
+    @JsonIgnore
     private Bucket bucket;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     private Product product;
 
     private Long count;

@@ -1,10 +1,7 @@
 package com.hh99.lv5.domain.member.entity;
 
 import com.hh99.lv5.global.auditing.Auditable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +16,7 @@ public class Member extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -31,6 +29,8 @@ public class Member extends Auditable {
 
     private Role role;
 
+    private String refreshToken;
+
     @Builder
     public Member(Long memberId, String email, String password, String gender, String phoneNumber, String address, Role role) {
         this.memberId = memberId;
@@ -40,5 +40,9 @@ public class Member extends Auditable {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.role = role;
+    }
+
+    public void updateRefreshToken(String updateRefreshToken) {
+        this.refreshToken = updateRefreshToken;
     }
 }

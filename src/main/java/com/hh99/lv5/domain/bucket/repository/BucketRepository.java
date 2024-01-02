@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface BucketRepository extends JpaRepository<Bucket, Long> {
-    Optional<Bucket> findByMemberId(long memberId);
+    Optional<Bucket> findByMember_MemberId(long memberId);
 }
