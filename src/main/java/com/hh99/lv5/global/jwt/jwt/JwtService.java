@@ -2,17 +2,23 @@ package com.hh99.lv5.global.jwt.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.hh99.lv5.domain.member.entity.Member;
 import com.hh99.lv5.domain.member.repository.MemberRepository;
+import com.hh99.lv5.global.config.RedisConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +27,7 @@ import java.util.Optional;
 public class JwtService {
 
     private final MemberRepository memberRepository;
+    private final StringRedisTemplate redisTemplate;
 
     @Value("${spring.jwt.secretKey}")
     private String secretKey;
@@ -108,12 +115,18 @@ public class JwtService {
         response.setHeader(refreshHeader, refreshToken);
     }
 
+    //멤버 컬럼에 저장 -> Redis에 저장
     public void updateRefreshToken(String email, String refreshToken) {
-        memberRepository.findByEmail(email)
-                .ifPresentOrElse(
-                        member -> member.updateRefreshToken(refreshToken),
-                        () -> new Exception("일치하는 회원이 없습니다.")
-                );
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+        memberOptional.ifPresent(member -> {
+            log.info("updateRefreshToken");
+            saveRefreshTokenToRedis(email, refreshToken);
+        });
+
+        if (memberOptional.isEmpty()) {
+            throw new RuntimeException("해당하는 유저가 없습니다.");
+        }
     }
 
     public boolean isTokenValid(String token) {
@@ -124,6 +137,11 @@ public class JwtService {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
             return false;
         }
+    }
+
+    public void saveRefreshTokenToRedis(String email, String refreshToken) {
+        redisTemplate.opsForValue().set(email, refreshToken, refreshTokenExpirationPeriod, TimeUnit.MILLISECONDS);
+        log.info("saveRefreshTokenToRedis");
     }
 }
 
