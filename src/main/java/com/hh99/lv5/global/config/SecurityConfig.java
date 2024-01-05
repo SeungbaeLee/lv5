@@ -6,6 +6,7 @@ import com.hh99.lv5.global.jwt.filter.CustomJsonUsernamePasswordAuthenticationFi
 import com.hh99.lv5.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.hh99.lv5.global.jwt.handler.LoginFailureHandler;
 import com.hh99.lv5.global.jwt.handler.LoginSuccessHandler;
+import com.hh99.lv5.global.jwt.handler.CustomLogoutSuccessHandler;
 import com.hh99.lv5.global.jwt.jwt.JwtService;
 import com.hh99.lv5.global.jwt.jwt.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +47,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(cs -> cs.disable())
-                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(f->f.disable())
-                .httpBasic(h->h.disable());
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(f -> f.disable())
+                .logout(l ->
+                        l.logoutUrl("/logout")
+                                .addLogoutHandler(customLogoutSuccessHandler()))
+                .httpBasic(h -> h.disable());
         http
                 .authorizeHttpRequests(auth->{
                     auth
@@ -98,6 +102,11 @@ public class SecurityConfig {
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
         JwtAuthenticationProcessingFilter jwtAuthenticationFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository, redisTemplate);
         return jwtAuthenticationFilter;
+    }
+
+    @Bean
+    public CustomLogoutSuccessHandler customLogoutSuccessHandler() {
+        return new CustomLogoutSuccessHandler(jwtService);
     }
 }
 

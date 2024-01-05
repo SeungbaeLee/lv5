@@ -143,5 +143,10 @@ public class JwtService {
         redisTemplate.opsForValue().set(email, refreshToken, refreshTokenExpirationPeriod, TimeUnit.MILLISECONDS);
         log.info("saveRefreshTokenToRedis");
     }
+
+    public void invalidateRefreshToken(String email) {
+        redisTemplate.delete(email);
+        log.info("Redis에서 리프레시토큰 삭제");
+    }
 }
 
