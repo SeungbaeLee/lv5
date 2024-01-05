@@ -40,6 +40,7 @@ public class ProductService {
     }
 
     //readOne
+    @Transactional(readOnly = true)
     public ProductResponseDto readProduct(long productId) {
         Product product = findProductById(productId);
         return ProductResponseDto.fromEntity(product);
@@ -47,6 +48,7 @@ public class ProductService {
 
 
     //readAll
+    @Transactional(readOnly = true)
     public Page<Product> readProducts(Pageable pageable) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
         return productRepository.findAll(pageRequest);
@@ -63,6 +65,7 @@ public class ProductService {
 
 
     //검증
+    @Transactional(readOnly = true)
     public Product findProductById(long productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         Product product = optionalProduct.orElseThrow(() -> new NullPointerException("찾을 수 없는 상품입니다."));

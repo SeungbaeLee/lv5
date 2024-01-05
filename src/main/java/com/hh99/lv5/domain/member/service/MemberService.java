@@ -36,6 +36,7 @@ public class MemberService {
         return MemberResponseDto.fromEntity(savedMember);
     }
 
+    @Transactional(readOnly = true)
     public Member findMemberById(long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         Member member = optionalMember.orElseThrow(() -> new NullPointerException("회원을 찾을 수 없습니다."));
