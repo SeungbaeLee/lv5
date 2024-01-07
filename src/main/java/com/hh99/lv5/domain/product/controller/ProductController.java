@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.LimitExceededException;
 import java.util.List;
@@ -26,8 +27,9 @@ public class ProductController {
 
     //create
     @PostMapping
-    public ResponseEntity createProduct(@Valid @RequestBody ProductPostDto postDto) {
-        ProductResponseDto productResponseDto = productService.createProduct(postDto);
+    public ResponseEntity createProduct(@Valid ProductPostDto postDto,
+                                        @RequestPart List<MultipartFile> multipartFiles) {
+        ProductResponseDto productResponseDto = productService.createProduct(postDto, multipartFiles);
         return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
     }
 

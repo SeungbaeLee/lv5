@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 public class ProductPostDto {
@@ -20,6 +22,8 @@ public class ProductPostDto {
     private String introduction;
     @NonNull
     private String category;
+
+    private List<String> imageUrl;
 
     public Product toEntity() {
         return Product.builder()

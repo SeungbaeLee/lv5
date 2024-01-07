@@ -22,7 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AwsS3Service {
 
-    @Value("{cloud.aws.s3.bucket}")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     private final AmazonS3 amazonS3;
 
@@ -41,8 +41,8 @@ public class AwsS3Service {
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            String urlPath = new StringBuilder("https://seungbae-lee.s3.ap-northeast-2.amazonaws.com/image-resize/").append(fileName).toString();
-            String urlPath2 = new StringBuilder("https://seungbae-lee.s3.ap-northeast-2.amazonaws.com/image/").append(fileName).toString();
+            String urlPath = new StringBuilder("s3://seungbaeimage/image-resize/").append(fileName).toString();
+            String urlPath2 = new StringBuilder("s3://seungbaeimage/image/").append(fileName).toString();
             fileUrlList.add(urlPath);
             fileUrlList.add(urlPath2);
         });
