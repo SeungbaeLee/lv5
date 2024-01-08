@@ -27,7 +27,7 @@ public class ProductController {
 
     //create
     @PostMapping
-    public ResponseEntity createProduct(@Valid ProductPostDto postDto,
+    public ResponseEntity createProduct(@RequestPart @Valid ProductPostDto postDto,
                                         @RequestPart List<MultipartFile> multipartFiles) {
         ProductResponseDto productResponseDto = productService.createProduct(postDto, multipartFiles);
         return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
