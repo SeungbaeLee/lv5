@@ -21,8 +21,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity createMember(@Valid @RequestBody MemberPostDto postDto) {
+    public ResponseEntity<MemberResponseDto> createMember(@Valid @RequestBody MemberPostDto postDto) {
         MemberResponseDto responseDto = memberService.createMember(postDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity<MemberResponseDto>(responseDto, HttpStatus.CREATED);
     }
 }

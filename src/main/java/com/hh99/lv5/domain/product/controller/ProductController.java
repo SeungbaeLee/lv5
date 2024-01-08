@@ -27,34 +27,32 @@ public class ProductController {
 
     //create
     @PostMapping
-    public ResponseEntity createProduct(@RequestPart @Valid ProductPostDto postDto,
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestPart @Valid ProductPostDto postDto,
                                         @RequestPart List<MultipartFile> multipartFiles) {
         ProductResponseDto productResponseDto = productService.createProduct(postDto, multipartFiles);
-        return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<ProductResponseDto>(productResponseDto, HttpStatus.CREATED);
     }
 
     //readOne
     @GetMapping("{productId}")
-    public ResponseEntity readProduct(@PathVariable @Positive long productId) {
+    public ResponseEntity<ProductResponseDto> readProduct(@PathVariable @Positive long productId) {
         ProductResponseDto productResponseDto = productService.readProduct(productId);
-        return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
+        return new ResponseEntity<ProductResponseDto>(productResponseDto, HttpStatus.OK);
     }
     //readAll
     @GetMapping
-    public ResponseEntity readProducts(Pageable pageable) {
+    public ResponseEntity<PageDto> readProducts(Pageable pageable) {
         Page<Product> productPage = productService.readProducts(pageable);
         List<Product> productList = productPage.getContent();
 
         PageDto pageDto = new PageDto<>(ProductResponseDto.fromEntityList(productList), productPage);
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        return new ResponseEntity<PageDto>(pageDto, HttpStatus.OK);
     }
 
     @PostMapping("/{productId}/buckets")
-    public ResponseEntity addToBucket(@PathVariable("productId") @Positive long productId,
-//                                      @RequestParam long memberId,
+    public ResponseEntity<ProductResponseDto> addToBucket(@PathVariable("productId") @Positive long productId,
                                       @RequestParam long quantity) {
-//        productService.addToBucket(productId, memberId,quantity);
         productService.addToBucket(productId, quantity);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<ProductResponseDto>(HttpStatus.OK);
     }
 }
