@@ -5,6 +5,7 @@ import com.hh99.lv5.domain.member.dto.MemberResponseDto;
 import com.hh99.lv5.domain.member.entity.Member;
 import com.hh99.lv5.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +24,15 @@ public class MemberService {
 
         String encryptedPassword = passwordEncoder.encode(postDto.getPassword());
 
-        Member member = Member.builder()
-                .email(postDto.getEmail())
-                .password(encryptedPassword)
-                .gender(postDto.getGender())
-                .phoneNumber(postDto.getPhoneNumber())
-                .address(postDto.getAddress())
-                .role(postDto.getRole())
-                .build();
+//        Member member = Member.builder()
+//                .email(postDto.getEmail())
+//                .password(encryptedPassword)
+//                .gender(postDto.getGender())
+//                .phoneNumber(postDto.getPhoneNumber())
+//                .address(postDto.getAddress())
+//                .role(postDto.getRole())
+//                .build();
+        Member member = postDto.toEntity();
 
         Member savedMember = memberRepository.save(member);
         return MemberResponseDto.fromEntity(savedMember);
@@ -40,6 +42,12 @@ public class MemberService {
     public Member findMemberById(long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         Member member = optionalMember.orElseThrow(() -> new NullPointerException("회원을 찾을 수 없습니다."));
+        return member;
+    }
+
+    public Member findMemberByEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Member member = optionalMember.orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
         return member;
     }
 }

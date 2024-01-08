@@ -1,5 +1,6 @@
 package com.hh99.lv5.domain.product.controller;
 
+import com.hh99.lv5.domain.member.entity.Member;
 import com.hh99.lv5.domain.product.dto.ProductPostDto;
 import com.hh99.lv5.domain.product.dto.ProductResponseDto;
 import com.hh99.lv5.domain.product.entity.Product;
@@ -12,6 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +32,7 @@ public class ProductController {
     //create
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@RequestPart @Valid ProductPostDto postDto,
-                                        @RequestPart List<MultipartFile> multipartFiles) {
+                                                            @RequestPart List<MultipartFile> multipartFiles) {
         ProductResponseDto productResponseDto = productService.createProduct(postDto, multipartFiles);
         return new ResponseEntity<ProductResponseDto>(productResponseDto, HttpStatus.CREATED);
     }
@@ -51,8 +55,9 @@ public class ProductController {
 
     @PostMapping("/{productId}/buckets")
     public ResponseEntity<ProductResponseDto> addToBucket(@PathVariable("productId") @Positive long productId,
-                                      @RequestParam long quantity) {
-        productService.addToBucket(productId, quantity);
+                                                          @RequestParam long quantity,
+                                                          @AuthenticationPrincipal UserDetails member) {
+        productService.addToBucket(productId, quantity, member);
         return new ResponseEntity<ProductResponseDto>(HttpStatus.OK);
     }
 }

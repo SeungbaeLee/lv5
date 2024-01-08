@@ -18,4 +18,10 @@ public class BucketResponseDto {
         this.totalPrice = totalPrice;
     }
 
+    public static BucketResponseDto fromEntity(List<BucketProduct> bucketProducts, long totalPrice) {
+        return BucketResponseDto.builder()
+                .bucketProducts(bucketProducts)
+                .totalPrice(totalPrice)
+                .build();
+    }
 }

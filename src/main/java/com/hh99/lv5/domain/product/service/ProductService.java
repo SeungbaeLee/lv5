@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,15 +33,15 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final BucketService bucketService;
-
     private final AwsS3Service awsS3Service;
+    private final MemberService memberService;
 
     //create
     public ProductResponseDto createProduct(ProductPostDto postDto, List<MultipartFile> multipartFiles) {
 
         Product product = postDto.toEntity();
         List<String> imageUrl = awsS3Service.uploadImage(multipartFiles);
-        product.setImageUrl(imageUrl);
+        product.setImageUrl(imageUrl);//postDto에 필드에 없어서 set으로 넣어줌. postDto에 nullable로 필드 만들어주고 toEntity로 한번에 넣어도 괜찮나?
         Product savedProduct = productRepository.save(product);
 
 
@@ -61,9 +63,13 @@ public class ProductService {
         return productRepository.findAll(pageRequest);
     }
 
-    public void addToBucket(long productId, long quantity) {
+    public void addToBucket(long productId, long quantity, UserDetails auth) {
         Product product = findProductById(productId);
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String mail = authentication.getName();
+        Member member = memberService.findMemberByEmail(auth.getUsername());
+
         if (product.getQuantity() < quantity) {
             throw new RuntimeException("상품의 수량을 초과했습니다. 수량을 조절해주세요.");
         }
@@ -77,6 +83,5 @@ public class ProductService {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         Product product = optionalProduct.orElseThrow(() -> new NullPointerException("찾을 수 없는 상품입니다."));
         return product;
-
     }
 }

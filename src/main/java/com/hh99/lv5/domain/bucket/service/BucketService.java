@@ -24,13 +24,7 @@ public class BucketService {
     private final MemberService memberService;
 
     public void addProductToBucket(Product product, Member member, long quantity) {
-//        Bucket bucket = bucketRepository.findByMemberId(member.getMemberId())
-//                .orElseGet(()->{
-//                    Bucket newBucket = Bucket.builder()
-//                            .member(member)
-//                            .build();
-//                    return bucketRepository.save(newBucket);
-//                });
+
         Bucket bucket = getBucketByMember(member);
         BucketProduct existingProduct = findProductInBucket(bucket, product);
 
@@ -52,10 +46,11 @@ public class BucketService {
         Bucket bucket = getBucketByMember(member);
 
         List<BucketProduct> bucketProducts = bucket.getBucketProducts();
-        return BucketResponseDto.builder()
-                .bucketProducts(bucketProducts)
-                .totalPrice(calculateTotalPrice(bucketProducts))
-                .build();
+//        return BucketResponseDto.builder()
+//                .bucketProducts(bucketProducts)
+//                .totalPrice(calculateTotalPrice(bucketProducts))
+//                .build();
+        return BucketResponseDto.fromEntity(bucketProducts, calculateTotalPrice(bucketProducts));
     }
 
     public BucketResponseDto updateQuantity(long memberId, long productId, long quantity) {
@@ -110,6 +105,6 @@ public class BucketService {
     private BucketProduct findBucketProductByProductId(Long bucketId, Long productId) {
         // 장바구니에서 해당 상품을 찾아 반환합니다.
         return bucketProductRepository.findBucketProductByBucketAndProductId(bucketId, productId)
-                .orElse(null);
+                .orElseThrow(()->new NullPointerException("해당 상품을 찾을 수 없습니다."));
     }
 }
