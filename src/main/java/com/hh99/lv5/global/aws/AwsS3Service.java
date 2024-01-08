@@ -41,10 +41,8 @@ public class AwsS3Service {
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            String urlPath = new StringBuilder("s3://seungbaeimage/image-resize/").append(fileName).toString();
-            String urlPath2 = new StringBuilder("s3://seungbaeimage/image/").append(fileName).toString();
+            String urlPath = new StringBuilder("https://seungbaeimage.s3.ap-northeast-2.amazonaws.com/").append(fileName).toString();
             fileUrlList.add(urlPath);
-            fileUrlList.add(urlPath2);
         });
         return fileUrlList;
     }
