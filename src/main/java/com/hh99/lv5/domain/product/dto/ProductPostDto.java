@@ -23,8 +23,6 @@ public class ProductPostDto {
     @NonNull
     private String category;
 
-    private List<String> imageUrl;
-
     public Product toEntity() {
         return Product.builder()
                 .productName(this.productName)
