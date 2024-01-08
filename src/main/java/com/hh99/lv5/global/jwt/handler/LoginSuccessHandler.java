@@ -28,10 +28,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
+        //멤버 컬럼에 저장 -> Redis에 저장
         memberRepository.findByEmail(email)
                 .ifPresent(user -> {
-                    user.updateRefreshToken(refreshToken);
-                    memberRepository.saveAndFlush(user);
+                    jwtService.saveRefreshTokenToRedis(email, refreshToken);
                 });
     }
 

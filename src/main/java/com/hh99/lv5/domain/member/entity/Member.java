@@ -29,7 +29,7 @@ public class Member extends Auditable {
 
     private Role role;
 
-    private String refreshToken;
+//    private String refreshToken;
 
     @Builder
     public Member(Long memberId, String email, String password, String gender, String phoneNumber, String address, Role role) {
@@ -42,7 +42,7 @@ public class Member extends Auditable {
         this.role = role;
     }
 
-    public void updateRefreshToken(String updateRefreshToken) {
-        this.refreshToken = updateRefreshToken;
-    }
+//    public void updateRefreshToken(String updateRefreshToken) {
+//        this.refreshToken = updateRefreshToken;
+//    }
 }

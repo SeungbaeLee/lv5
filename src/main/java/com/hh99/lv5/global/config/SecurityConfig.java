@@ -6,11 +6,13 @@ import com.hh99.lv5.global.jwt.filter.CustomJsonUsernamePasswordAuthenticationFi
 import com.hh99.lv5.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.hh99.lv5.global.jwt.handler.LoginFailureHandler;
 import com.hh99.lv5.global.jwt.handler.LoginSuccessHandler;
+import com.hh99.lv5.global.jwt.handler.CustomLogoutSuccessHandler;
 import com.hh99.lv5.global.jwt.jwt.JwtService;
 import com.hh99.lv5.global.jwt.jwt.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -34,6 +36,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
+    private final StringRedisTemplate redisTemplate;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -44,9 +47,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(cs -> cs.disable())
-                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(f->f.disable())
-                .httpBasic(h->h.disable());
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(f -> f.disable())
+                .logout(l ->
+                        l.logoutUrl("/logout")
+                                .addLogoutHandler(customLogoutSuccessHandler()))
+                .httpBasic(h -> h.disable());
         http
                 .authorizeHttpRequests(auth->{
                     auth
@@ -92,10 +98,15 @@ public class SecurityConfig {
         return customJsonUsernamePasswordLoginFilter;
     }
 
-    @Bean
+    @Bean//redisTemplate 추가
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
-        JwtAuthenticationProcessingFilter jwtAuthenticationFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
+        JwtAuthenticationProcessingFilter jwtAuthenticationFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository, redisTemplate);
         return jwtAuthenticationFilter;
+    }
+
+    @Bean
+    public CustomLogoutSuccessHandler customLogoutSuccessHandler() {
+        return new CustomLogoutSuccessHandler(jwtService);
     }
 }
 

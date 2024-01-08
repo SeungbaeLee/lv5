@@ -30,6 +30,9 @@ public class Product extends Auditable {
 
     private String category;
 
+    @ElementCollection
+    private List<String> imageUrl;
+
     @OneToMany(mappedBy = "product")
     private List<BucketProduct> bucketProducts = new ArrayList<>();
 
@@ -41,5 +44,9 @@ public class Product extends Auditable {
         this.quantity = quantity;
         this.introduction = introduction;
         this.category = category;
+    }
+
+    public void setImageUrl(List<String> imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

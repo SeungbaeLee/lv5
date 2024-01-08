@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -27,6 +28,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final StringRedisTemplate redisTemplate;
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
@@ -51,19 +53,26 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         }
     }
 
+    //멤버 컬럼에 저장 -> Redis에 저장
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-        memberRepository.findByRefreshToken(refreshToken)
-                .ifPresent(admin -> {
-                    String reIssuedRefreshToken = reIssueRefreshToken(admin);
-                    jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(admin.getEmail()),
-                            reIssuedRefreshToken);
-                });
+        String email = jwtService.extractEmail(refreshToken)
+                .orElseThrow(() -> new RuntimeException("Invalid RefreshToken")); // 이메일 추출
+
+        String storedRefreshToken = redisTemplate.opsForValue().get(refreshToken); // 레디스에서 리프레시 토큰 조회
+        log.info("레디스에서 리프레시 토큰 조회");
+        if (storedRefreshToken != null && storedRefreshToken.equals(refreshToken)) {
+            String reIssuedRefreshToken = jwtService.createRefreshToken();
+            jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(email), reIssuedRefreshToken);
+        } else {
+            throw new RuntimeException("Invalid RefreshToken or RefreshToken not found in Redis");
+        }
     }
 
+
+    //멤버 컬럼에 저장 -> Redis에 저장
     private String reIssueRefreshToken(Member member) {
         String reIssuedRefreshToken = jwtService.createRefreshToken();
-        member.updateRefreshToken(reIssuedRefreshToken);
-        memberRepository.saveAndFlush(member);
+        jwtService.saveRefreshTokenToRedis(member.getEmail(), reIssuedRefreshToken);
         return reIssuedRefreshToken;
     }
 

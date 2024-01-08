@@ -46,7 +46,7 @@ public class BucketService {
             bucketProductRepository.save(bucketProduct);
         }
     }
-
+    @Transactional(readOnly = true)
     public BucketResponseDto readBucket(long memberId) {
         Member member = memberService.findMemberById(memberId);
         Bucket bucket = getBucketByMember(member);
@@ -81,6 +81,7 @@ public class BucketService {
         bucketProductRepository.delete(bucketProduct);
     }
 
+    @Transactional(readOnly = true)
     private Bucket getBucketByMember(Member member) {
         Bucket bucket = bucketRepository.findByMember_MemberId(member.getMemberId())
                 .orElseGet(()->{
@@ -92,6 +93,7 @@ public class BucketService {
         return bucket;
     }
 
+    @Transactional(readOnly = true)
     private BucketProduct findProductInBucket(Bucket bucket, Product product) {
         return bucket.getBucketProducts().stream()
                 .filter(bp -> bp.getProduct().equals(product))
