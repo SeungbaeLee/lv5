@@ -30,10 +30,10 @@ public class MemberPostDto {
     @NonNull
     private Role role;
 
-    public Member toEntity() {
+    public Member toEntity(String encryptPassword) {
         return Member.builder()
                 .email(this.email)
-                .password(this.password)
+                .password(encryptPassword)
                 .gender(this.gender)
                 .phoneNumber(this.phoneNumber)
                 .address(this.address)

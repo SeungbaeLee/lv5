@@ -24,15 +24,7 @@ public class MemberService {
 
         String encryptedPassword = passwordEncoder.encode(postDto.getPassword());
 
-//        Member member = Member.builder()
-//                .email(postDto.getEmail())
-//                .password(encryptedPassword)
-//                .gender(postDto.getGender())
-//                .phoneNumber(postDto.getPhoneNumber())
-//                .address(postDto.getAddress())
-//                .role(postDto.getRole())
-//                .build();
-        Member member = postDto.toEntity();
+        Member member = postDto.toEntity(encryptedPassword);
 
         Member savedMember = memberRepository.save(member);
         return MemberResponseDto.fromEntity(savedMember);
